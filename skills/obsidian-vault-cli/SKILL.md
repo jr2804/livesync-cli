@@ -1,11 +1,28 @@
 ---
 name: obsidian-vault-cli
-description: Use the @jr2804/livesync-cli npm package to read, write, list, and manage files in an Obsidian vault synced by Self-hosted LiveSync via CouchDB
+description: Use when reading, writing, listing, or managing files in an Obsidian vault synced by Self-hosted LiveSync via CouchDB. Uses the @jr2804/livesync-cli npm package.
+version: 1.0.0
+author: Jan Reimes
+license: MIT
+metadata:
+  hermes:
+    tags: [obsidian, livesync, vault, couchdb, cli]
+    related_skills: [vaultwarden]
 ---
 
 # obsidian-vault-cli
 
-Use the `@jr2804/livesync-cli` CLI to interact with an Obsidian vault that is synced via [Self-hosted LiveSync](https://github.com/vrtmrz/obsidian-livesync) and CouchDB.
+Interact with an Obsidian vault that is synced via [Self-hosted LiveSync](https://github.com/vrtmrz/obsidian-livesync) and CouchDB using the `@jr2804/livesync-cli` CLI.
+
+## When to Use
+
+- List files in the vault
+- Read a note's content
+- Write or update a note
+- Delete a note
+- Push/pull files between local filesystem and the vault database
+- Run a one-shot sync or continuous daemon
+- Check file metadata (revisions, conflicts, chunks)
 
 ## Quick Start
 
@@ -30,7 +47,7 @@ livesync-cli init-settings ./my-vault/.livesync/settings.json
 
 ### Step 2: Edit the settings file
 
-The minimum required settings are:
+Minimum required settings:
 
 ```json
 {
@@ -44,16 +61,14 @@ The minimum required settings are:
 }
 ```
 
-**Key settings:**
-
 | Setting | Description |
 |---------|-------------|
 | `couchDB_URI` | CouchDB server URL (e.g. `http://192.168.1.100:5984`) |
 | `couchDB_USER` | CouchDB username |
 | `couchDB_PASSWORD` | CouchDB password |
-| `couchDB_DBNAME` | CouchDB database name (e.g. `jan`) |
+| `couchDB_DBNAME` | CouchDB database name |
 | `encrypt` | `true` if E2E encryption is enabled on the vault, `false` otherwise |
-| `passphrase` | E2E encryption passphrase (empty string `""` if encryption is disabled) |
+| `passphrase` | E2E encryption passphrase. Empty string `""` if encryption is disabled |
 | `isConfigured` | Must be `true` for the CLI to operate |
 | `usePathObfuscation` | `true` if the vault uses path obfuscation (requires passphrase) |
 
@@ -155,14 +170,31 @@ livesync-cli ./my-vault setup "obsidian://setuplivesync?settings=..."
 
 ## Our Vault
 
-Our Obsidian vault is at `/opt/workspace/obsidian/jan/vault/`. The CouchDB database is `jan` on `http://obsidian-livesync.local:5984`. Credentials are stored in Vaultwarden (openclaw vault, entry "CouchDB Jan").
+Our Obsidian vault is at `/opt/workspace/obsidian/jan/vault/`. The CouchDB database is `jan` on `http://obsidian-livesync.local:5984`. Credentials are in Vaultwarden (openclaw vault, entry "CouchDB Jan").
 
 The vault has **no E2E encryption** (`encrypt: false`, `passphrase: ""`).
 
+## Common Pitfalls
+
+1. **Missing `isConfigured: true`** — the CLI refuses to operate without this setting.
+2. **Wrong `encrypt`/`passphrase` combination** — if `encrypt: true` but passphrase is wrong, all reads fail with decryption errors. If `encrypt: false` but a passphrase is set, the CLI may still try encryption transforms.
+3. **Path obfuscation mismatch** — if the vault uses path obfuscation but `usePathObfuscation` is not set, the daemon reports success but writes 0-byte files.
+4. **Database directory not initialized** — the first `sync` or `daemon` run creates the PouchDB database. If the directory doesn't exist, create it first.
+
 ## Tips
 
-- The `--vault` / `-V` flag separates the PouchDB database directory from the actual `.md` vault directory. Use this when the database is in a different location than the vault files.
+- The `--vault` / `-V` flag separates the PouchDB database directory from the actual `.md` vault directory.
 - The `--verbose` flag shows detailed LiveSync log output for debugging.
 - The `--settings` / `-s` flag lets you specify a custom settings file path.
-- For the daemon, place a `.livesync/ignore` file in the vault root to exclude files from sync (supports `.gitignore`-style patterns).
+- Place a `.livesync/ignore` file in the vault root to exclude files from sync (supports `.gitignore`-style patterns).
 - The daemon responds to `SIGTERM` / `SIGINT` for graceful shutdown.
+
+## Verification Checklist
+
+- [ ] `npx @jr2804/livesync-cli --help` shows the full command list
+- [ ] Settings file exists at `<db-path>/.livesync/settings.json`
+- [ ] `couchDB_URI`, `couchDB_USER`, `couchDB_PASSWORD`, `couchDB_DBNAME` are set
+- [ ] `isConfigured` is `true`
+- [ ] `encrypt` and `passphrase` match the vault's actual encryption state
+- [ ] `ls` returns expected files
+- [ ] `cat <path>` returns expected content
