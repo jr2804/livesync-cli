@@ -1,7 +1,7 @@
 ---
 name: obsidian-vault-cli
 description: Use when reading, writing, listing, or managing files in an Obsidian vault synced by Self-hosted LiveSync via CouchDB. Uses the @jr2804/livesync-cli npm package.
-version: 3.0.0
+version: 3.1.0
 author: Jan Reimes
 license: MIT
 metadata:
@@ -24,10 +24,12 @@ Interact with an Obsidian vault synced via [Self-hosted LiveSync](https://github
 - Run a one-shot sync or continuous daemon
 - Check file metadata (revisions, conflicts, chunks)
 
-## Quick Start
+## Connect & Sync
+
+### 1. Install
 
 ```bash
-# Run directly (no install needed)
+# Run directly (no install)
 npx @jr2804/livesync-cli <database-path> <command>
 
 # Or install globally
@@ -35,19 +37,15 @@ npm install -g @jr2804/livesync-cli
 livesync-cli <database-path> <command>
 ```
 
-## Configuration
+### 2. Configure CouchDB connection
 
-The CLI needs a **local database directory** (PouchDB) and a **settings file** at `<database-path>/.livesync/settings.json`.
-
-### Step 1: Create settings
+Create a settings file:
 
 ```bash
 livesync-cli init-settings ./my-vault/.livesync/settings.json
 ```
 
-### Step 2: Edit the settings file
-
-Minimum required settings:
+Edit `<db-path>/.livesync/settings.json` with your CouchDB credentials:
 
 ```json
 {
@@ -63,116 +61,85 @@ Minimum required settings:
 
 | Setting | Description |
 |---------|-------------|
-| `couchDB_URI` | CouchDB server URL (e.g. `http://192.168.1.100:5984`) |
+| `couchDB_URI` | CouchDB server URL |
 | `couchDB_USER` | CouchDB username |
 | `couchDB_PASSWORD` | CouchDB password |
 | `couchDB_DBNAME` | CouchDB database name |
-| `encrypt` | `true` if E2E encryption is enabled on the vault, `false` otherwise |
-| `passphrase` | E2E encryption passphrase. Empty string `""` if encryption is disabled |
+| `encrypt` | `true` if E2E encryption is enabled, `false` otherwise |
+| `passphrase` | E2E passphrase. `""` if encryption is disabled |
 | `isConfigured` | Must be `true` for the CLI to operate |
-| `usePathObfuscation` | `true` if the vault uses path obfuscation (requires passphrase) |
+| `usePathObfuscation` | `true` if vault uses path obfuscation (requires passphrase) |
 
-### Step 3: Sync the vault
+### 3. Sync
 
 ```bash
 # One-shot sync
 livesync-cli ./my-vault sync
 
 # Continuous daemon (watches for changes)
-livesync-cli ./my-vault daemon --vault /path/to/actual/vault
-```
-
-## Commands
-
-### File Operations
-
-```bash
-# List files
-livesync-cli ./my-vault ls
-livesync-cli ./my-vault ls "Daily Notes/"
-
-# Read a file (to stdout)
-livesync-cli ./my-vault cat "Daily Notes/2026-01-15.md"
-
-# Write a file (from stdin)
-echo "# Hello" | livesync-cli ./my-vault put "notes/hello.md"
-
-# Push a local file into the database
-livesync-cli ./my-vault push ./local-file.md "vault/path/file.md"
-
-# Pull a file from the database to local filesystem
-livesync-cli ./my-vault pull "vault/path/file.md" ./output.md
-
-# Pull a specific revision
-livesync-cli ./my-vault pull-rev "vault/path/file.md" ./old-version.md 3-abcdef
-
-# Delete a file
-livesync-cli ./my-vault rm "notes/old-note.md"
-
-# Show file metadata (ID, revision, conflicts, chunks)
-livesync-cli ./my-vault info "notes/hello.md"
-
-# Resolve conflicts (keep one revision)
-livesync-cli ./my-vault resolve "notes/hello.md" 3-abcdef
-```
-
-### Sync Operations
-
-```bash
-# One-shot sync (pull from CouchDB, push local changes)
-livesync-cli ./my-vault sync
-
-# Continuous daemon
 livesync-cli ./my-vault daemon --vault /path/to/vault
 
-# Daemon with polling (instead of _changes feed)
+# Daemon with polling interval
 livesync-cli ./my-vault daemon --interval 30 --vault /path/to/vault
 
 # Mirror database to local filesystem
 livesync-cli ./my-vault mirror /path/to/vault
 ```
 
+## Command Reference
+
+### File Operations
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `ls [prefix]` | List files | `livesync-cli ./db ls "Daily Notes/"` |
+| `cat <path>` | Read file to stdout | `livesync-cli ./db cat "notes/hello.md"` |
+| `put <dst>` | Write stdin to database | `echo "content" \| livesync-cli ./db put "notes/hello.md"` |
+| `push <src> <dst>` | Push local file into database | `livesync-cli ./db push ./file.md "vault/file.md"` |
+| `pull <src> <dst>` | Pull database file to local | `livesync-cli ./db pull "vault/file.md" ./out.md` |
+| `pull-rev <src> <dst> <rev>` | Pull specific revision | `livesync-cli ./db pull-rev "f.md" ./old.md 3-abcdef` |
+| `rm <path>` | Delete a file | `livesync-cli ./db rm "notes/old.md"` |
+| `info <path>` | Show file metadata | `livesync-cli ./db info "notes/hello.md"` |
+| `resolve <path> <rev>` | Resolve conflicts | `livesync-cli ./db resolve "f.md" 3-abcdef` |
+
+### Sync & Daemon
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `sync` | One replication cycle | `livesync-cli ./db sync` |
+| `daemon` | Continuous sync (default) | `livesync-cli ./db daemon --vault /vault` |
+| `daemon --interval <N>` | Polling mode | `livesync-cli ./db daemon --interval 30` |
+| `mirror [vault-path]` | Mirror DB to filesystem | `livesync-cli ./db mirror /vault` |
+
 ### Remote Management
 
-```bash
-# Add a remote CouchDB
-livesync-cli ./my-vault remote-add my-remote "sls+https://user:pass@example.com/db"
+| Command | Description | Example |
+|---------|-------------|---------|
+| `remote-add <name> <connstr>` | Add remote CouchDB | `livesync-cli ./db remote-add my-remote "sls+https://..."` |
+| `remote-ls` | List remotes | `livesync-cli ./db remote-ls` |
+| `remote-activate <id>` | Activate remote | `livesync-cli ./db remote-activate remote-abc123` |
+| `remote-status [id]` | Check remote status | `livesync-cli ./db remote-status remote-abc123` |
+| `unlock-remote [id]` | Unlock remote DB | `livesync-cli ./db unlock-remote remote-abc123` |
+| `lock-remote [id]` | Lock remote DB | `livesync-cli ./db lock-remote remote-abc123` |
+| `remote-rm <id>` | Remove remote | `livesync-cli ./db remote-rm remote-abc123` |
+| `remote-export <id>` | Export remote connection string | `livesync-cli ./db remote-export remote-abc123` |
+| `remote-set <id> <connstr>` | Replace remote connection string | `livesync-cli ./db remote-set remote-abc123 "sls+https://..."` |
+| `mark-resolved [id]` | Resolve sync status | `livesync-cli ./db mark-resolved remote-abc123` |
 
-# List remotes
-livesync-cli ./my-vault remote-ls
+### P2P
 
-# Activate/deactivate a remote
-livesync-cli ./my-vault remote-activate remote-abc123
+| Command | Description | Example |
+|---------|-------------|---------|
+| `p2p-peers <timeout>` | Discover peers | `livesync-cli ./db p2p-peers 5` |
+| `p2p-sync <peer> <timeout>` | Sync with peer | `livesync-cli ./db p2p-sync my-peer 15` |
+| `p2p-host` | Host mode | `livesync-cli ./db p2p-host` |
 
-# Check remote status
-livesync-cli ./my-vault remote-status remote-abc123
+### Setup
 
-# Unlock a locked remote database
-livesync-cli ./my-vault unlock-remote remote-abc123
-
-# Lock a remote database
-livesync-cli ./my-vault lock-remote remote-abc123
-```
-
-### P2P Operations
-
-```bash
-# Discover peers
-livesync-cli ./my-vault p2p-peers 5
-
-# Sync with a peer
-livesync-cli ./my-vault p2p-sync my-peer-name 15
-
-# Host mode (wait for connections)
-livesync-cli ./my-vault p2p-host
-```
-
-### Setup URI
-
-```bash
-# Apply a setup URI from Obsidian's "Copy Setup URI"
-livesync-cli ./my-vault setup "obsidian://setuplivesync?settings=..."
-```
+| Command | Description | Example |
+|---------|-------------|---------|
+| `init-settings [path]` | Create default settings | `livesync-cli init-settings ./settings.json` |
+| `setup <setupURI>` | Apply setup URI | `livesync-cli ./db setup "obsidian://setuplivesync?..."` |
 
 ## Our Vault
 
