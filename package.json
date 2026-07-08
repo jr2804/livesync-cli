@@ -1,0 +1,54 @@
+{
+  "name": "@jr2804/livesync-cli",
+  "version": "0.25.80-cli",
+  "description": "SEA-packaged livesync-cli from vrtmrz/obsidian-livesync \u2014 multiplatform binaries + npm",
+  "type": "module",
+  "bin": {
+    "livesync-cli": "./bin/livesync-cli.cjs"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "prebuild": "node scripts/check-upstream.mjs",
+    "test": "node bin/livesync-cli.js --help"
+  },
+  "keywords": [
+    "obsidian",
+    "livesync",
+    "cli",
+    "couchdb",
+    "sea"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jr2804/livesync-cli.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "bin/",
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "chokidar": "^4.0.0",
+    "minimatch": "^10.2.5",
+    "octagonal-wheels": "^0.1.47",
+    "pouchdb-adapter-http": "^9.0.0",
+    "pouchdb-adapter-leveldb": "^9.0.0",
+    "pouchdb-core": "^9.0.0",
+    "pouchdb-errors": "^9.0.0",
+    "pouchdb-find": "^9.0.0",
+    "pouchdb-mapreduce": "^9.0.0",
+    "pouchdb-merge": "^9.0.0",
+    "pouchdb-replication": "^9.0.0",
+    "pouchdb-utils": "^9.0.0",
+    "transform-pouch": "^2.0.0",
+    "werift": "^0.23.0"
+  }
+}
