@@ -1,0 +1,87 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*-cli"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build CLI
+        run: npm run build
+
+      - name: List dist contents
+        run: ls -la dist/
+
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: livesync-cli-dist
+          path: dist/
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: livesync-cli-dist
+          path: dist/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "livesync-cli ${{ github.ref_name }}"
+          body: |
+            ## livesync-cli ${{ github.ref_name }}
+
+            Built from [vrtmrz/obsidian-livesync](https://github.com/vrtmrz/obsidian-livesync) at tag `${{ github.ref_name }}`.
+
+            ### Usage
+
+            ```bash
+            npx @jr2804/livesync-cli <database-path> [options] <command>
+            ```
+
+            Or install globally:
+
+            ```bash
+            npm install -g @jr2804/livesync-cli
+            livesync-cli <database-path> [options] <command>
+            ```
+          draft: false
+          prerelease: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
