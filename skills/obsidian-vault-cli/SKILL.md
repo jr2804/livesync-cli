@@ -151,7 +151,7 @@ Vault path, CouchDB URL, database name, and credentials are stored in Vaultwarde
 2. **Wrong `encrypt`/`passphrase` combination** — if `encrypt: true` but passphrase is wrong, all reads fail with decryption errors. If `encrypt: false` but a passphrase is set, the CLI may still try encryption transforms.
 3. **Path obfuscation mismatch** — if the vault uses path obfuscation but `usePathObfuscation` is not set, the daemon reports success but writes 0-byte files.
 4. **Database directory not initialized** — the first `sync` or `daemon` run creates the PouchDB database. If the directory doesn't exist, create it first.
-5. **CouchDB URL not reachable** — the default `.env` URL `http://obsidian-livesync.local:5984` only resolves inside the Docker network. From outside, use `https://obsidian-livesync.reimes.uk`.
+5. **CouchDB URL not reachable** — the default `.env` URL may only resolve inside the Docker network. Use the external URL when connecting from outside.
 
 ## Tips
 
