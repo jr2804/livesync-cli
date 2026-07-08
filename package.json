@@ -1,7 +1,7 @@
 {
   "name": "@jr2804/livesync-cli",
-  "version": "0.25.80-cli",
-  "description": "SEA-packaged livesync-cli from vrtmrz/obsidian-livesync \u2014 multiplatform binaries + npm",
+  "version": "0.25.80-cli.2",
+  "description": "SEA-packaged livesync-cli from vrtmrz/obsidian-livesync — multiplatform binaries + npm",
   "type": "module",
   "bin": {
     "livesync-cli": "./bin/livesync-cli.cjs"
@@ -31,9 +31,9 @@
   },
   "files": [
     "bin/",
-    "dist/",
-    "README.md",
-    "LICENSE"
+    "dist/index.cjs",
+    "dist/index.browser-DbH0tIYi.cjs",
+    "dist/index.browser-DZqJcWQp.cjs"
   ],
   "dependencies": {
     "chokidar": "^4.0.0",
