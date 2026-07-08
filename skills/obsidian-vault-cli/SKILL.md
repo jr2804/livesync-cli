@@ -143,9 +143,7 @@ livesync-cli ./my-vault mirror /path/to/vault
 
 ## Our Vault
 
-Our Obsidian vault is at `/opt/workspace/obsidian/jan/vault/`. The CouchDB database is `jan` on `http://obsidian-livesync.local:5984`. Credentials are in Vaultwarden (openclaw vault, entry "CouchDB Jan").
-
-The vault has **no E2E encryption** (`encrypt: false`, `passphrase: ""`).
+Vault path, CouchDB URL, database name, and credentials are stored in Vaultwarden (openclaw vault, entry "CouchDB Jan"). The vault has no E2E encryption.
 
 ## Common Pitfalls
 
