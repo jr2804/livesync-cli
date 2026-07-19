@@ -1,6 +1,6 @@
 {
   "name": "@jr2804/livesync-cli",
-  "version": "0.25.80-cli.2",
+  "version": "0.25.82-cli",
   "description": "SEA-packaged livesync-cli from vrtmrz/obsidian-livesync — multiplatform binaries + npm",
   "type": "module",
   "bin": {

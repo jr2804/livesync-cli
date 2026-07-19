@@ -5,3 +5,4 @@ sea-config.json
 esbuild.config.cjs
 *.b64
 .DS_Store
+bin/livesync-cli.js

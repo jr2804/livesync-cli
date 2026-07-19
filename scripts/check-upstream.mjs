@@ -16,16 +16,17 @@ const upstreamDir = path.join(root, "upstream");
 
 // Check the submodule is checked out
 let actualTag;
+let tags = [];
 try {
-  actualTag = execSync("git describe --tags --exact-match 2>/dev/null || echo 'no-tag'", {
+  tags = execSync("git tag --points-at HEAD", {
     cwd: upstreamDir,
     encoding: "utf-8",
-  }).trim();
-} catch {
-  actualTag = "no-tag";
-}
+  }).trim().split(/\n/);
+} catch { /* ignore */ }
+const expectedPlain = expectedTag.replace(/-cli$/, '');
+actualTag = tags.find(t => t === expectedTag || t === expectedPlain || t === expectedPlain + '-cli') || tags[0] || 'no-tag';
 
-if (actualTag !== expectedTag) {
+if (actualTag !== expectedTag && actualTag !== expectedPlain && actualTag !== expectedPlain + '-cli') {
   console.error(
     `ERROR: Upstream submodule is at "${actualTag}" but package.json version is "${expectedTag}".\n` +
     `Run: cd upstream && git fetch --tags && git checkout tags/${expectedTag}`

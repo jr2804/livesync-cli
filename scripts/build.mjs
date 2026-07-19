@@ -43,7 +43,7 @@ console.log("OK Bundle: " + (readFileSync(bundlePath).length / 1024).toFixed(0) 
 
 // Create bin/livesync-cli.js - a thin wrapper that runs the bundle
 mkdirSync(BIN_DIR, { recursive: true });
-const binContent = `#i/usr/bin/env node
+const binContent = `#!/usr/bin/env node
 // @ir2804/livesync-cli wrapper
 const path = require("path");
 const distDir = path.join(__dirname, "..", "dist");
