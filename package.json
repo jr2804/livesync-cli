@@ -35,10 +35,12 @@
   ],
   "dependencies": {
     "chokidar": "^4.0.0",
+    "memdown": "^6.1.1",
     "minimatch": "^10.2.5",
     "octagonal-wheels": "^0.1.47",
     "pouchdb-adapter-http": "^9.0.0",
     "pouchdb-adapter-leveldb": "^9.0.0",
+    "pouchdb-adapter-memory": "^9.0.0",
     "pouchdb-core": "^9.0.0",
     "pouchdb-errors": "^9.0.0",
     "pouchdb-find": "^9.0.0",
@@ -48,5 +50,8 @@
     "pouchdb-utils": "^9.0.0",
     "transform-pouch": "^2.0.0",
     "werift": "^0.23.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.1"
   }
 }

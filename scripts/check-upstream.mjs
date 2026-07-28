@@ -23,10 +23,11 @@ try {
     encoding: "utf-8",
   }).trim().split(/\n/);
 } catch { /* ignore */ }
-const expectedPlain = expectedTag.replace(/-cli$/, '');
-actualTag = tags.find(t => t === expectedTag || t === expectedPlain || t === expectedPlain + '-cli') || tags[0] || 'no-tag';
+const baseTag = expectedTag.replace(/(-cli)\..*$/, '$1');  // "1.0.0-cli.1" -> "1.0.0-cli"
+const expectedPlain = baseTag.replace(/-cli$/, '');        // "1.0.0-cli" -> "1.0.0"
+actualTag = tags.find(t => t === expectedTag || t === baseTag || t === expectedPlain || t === expectedPlain + '-cli') || tags[0] || 'no-tag';
 
-if (actualTag !== expectedTag && actualTag !== expectedPlain && actualTag !== expectedPlain + '-cli') {
+if (actualTag !== expectedTag && actualTag !== baseTag && actualTag !== expectedPlain && actualTag !== expectedPlain + '-cli') {
   console.error(
     `ERROR: Upstream submodule is at "${actualTag}" but package.json version is "${expectedTag}".\n` +
     `Run: cd upstream && git fetch --tags && git checkout tags/${expectedTag}`
