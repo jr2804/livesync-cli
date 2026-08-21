@@ -83,7 +83,7 @@ livesync-cli ./my-vault daemon --vault /path/to/vault
 livesync-cli ./my-vault daemon --interval 30 --vault /path/to/vault
 
 # Mirror database to local filesystem
-livesync-cli ./my-vault mirror /path/to/vault
+livesync-cli ./my-vault mirror --vault /path/to/vault
 ```
 
 ## Command Reference
@@ -98,6 +98,7 @@ livesync-cli ./my-vault mirror /path/to/vault
 | `push <src> <dst>` | Push local file into database | `livesync-cli ./db push ./file.md "vault/file.md"` |
 | `pull <src> <dst>` | Pull database file to local | `livesync-cli ./db pull "vault/file.md" ./out.md` |
 | `pull-rev <src> <dst> <rev>` | Pull specific revision | `livesync-cli ./db pull-rev "f.md" ./old.md 3-abcdef` |
+| `cat-rev <src> <rev>` | Read file at specific revision | `livesync-cli ./db cat-rev "notes/hello.md" 3-abcdef` |
 | `rm <path>` | Delete a file | `livesync-cli ./db rm "notes/old.md"` |
 | `info <path>` | Show file metadata | `livesync-cli ./db info "notes/hello.md"` |
 | `resolve <path> <rev>` | Resolve conflicts | `livesync-cli ./db resolve "f.md" 3-abcdef` |
@@ -109,7 +110,7 @@ livesync-cli ./my-vault mirror /path/to/vault
 | `sync` | One replication cycle | `livesync-cli ./db sync` |
 | `daemon` | Continuous sync (default) | `livesync-cli ./db daemon --vault /vault` |
 | `daemon --interval <N>` | Polling mode | `livesync-cli ./db daemon --interval 30` |
-| `mirror [vault-path]` | Mirror DB to filesystem | `livesync-cli ./db mirror /vault` |
+| `mirror` | Mirror DB to filesystem | `livesync-cli ./db mirror --vault /vault` |
 
 ### Remote Management
 
