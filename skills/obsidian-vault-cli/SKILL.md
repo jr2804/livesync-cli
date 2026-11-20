@@ -152,11 +152,14 @@ Vault path, CouchDB URL, database name, and credentials are stored in Vaultwarde
 ## Common Pitfalls
 
 1. **Missing `isConfigured: true`** — the CLI refuses to operate without this setting.
-2. **Wrong `encrypt`/`passphrase` combination** — if `encrypt: true` but passphrase is wrong, all reads fail with decryption errors. If `encrypt: false` but a passphrase is set, the CLI may still try encryption transforms.
+2. **Wrong `encrypt`/`passphrase` combination** — if `encrypt: true` but passphrase is wrong, all reads fail with
+   decryption errors. If `encrypt: false` but a passphrase is set, the CLI may still try encryption transforms.
 3. **Path obfuscation mismatch** — if the vault uses path obfuscation but `usePathObfuscation` is not set, the daemon reports success but writes 0-byte files.
 4. **Database directory not initialized** — the first `sync` or `daemon` run creates the PouchDB database. If the directory doesn't exist, create it first.
 5. **CouchDB URL not reachable** — the default `.env` URL may only resolve inside the Docker network. Use the external URL when connecting from outside.
-6. **Interrupted `fetch` / `rebuild`** — leaves a record in `<db-path>/.livesync/reconstruction.json`, and ordinary sync/mutating commands stop while it is pending. Retry the *same* command with `--force` and the same paths; do not delete the record.
+6. **Interrupted `fetch` / `rebuild`** — leaves a record in `<db-path>/.livesync/reconstruction.json`, and ordinary
+   sync/mutating commands stop while it is pending. Retry the *same* command with `--force` and the same paths; do
+   not delete the record.
 7. **`sync` stops at a Journal** — retry with `--debug` to see the Journal key, then `journal-skip <journal-key>` to skip that exact stuck Journal and resume.
 
 ## Tips

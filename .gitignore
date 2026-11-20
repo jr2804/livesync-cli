@@ -6,3 +6,12 @@ esbuild.config.cjs
 *.b64
 .DS_Store
 bin/livesync-cli.js
+
+# Keep .agents/ DOX .md files tracked (override any blanket ignore)
+/.agents/*
+!/.agents/*.md
+!/.agents/history/
+!/.agents/history/**
+
+# Implementation plans — mutable working artifacts, never committed
+/.agents/plans/

@@ -1,0 +1,3 @@
+[tools]
+# Markdown formatter/linter
+"rumdl" = "latest"
