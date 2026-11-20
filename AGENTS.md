@@ -142,9 +142,11 @@ _Always-injected_ — keep minimal. Everything else → `.agents/` files.
 5. Releases are tag-driven: push `v*-cli` (e.g. `v1.0.51-cli`) and the
    `Release` workflow builds and publishes to npm. Published npm versions are
    immutable — bump the `.N` suffix to republish.
-6. The publish step authenticates with the `NPM_TOKEN` repository secret.
-   npm answers a revoked or expired token with HTTP 404 on the package `PUT`,
-   not 401 — check `GET /-/whoami` before suspecting the package.
+6. The publish step uses npm **Trusted Publishing** (GitHub Actions OIDC) —
+   no npm token is stored in this repo. It only succeeds once the npm-side
+   Trusted Publisher entry exists for `jr2804` / `livesync-cli` / workflow
+   `release.yml`; a new entry must complete its first publish within two days
+   or it expires and must be recreated.
 7. This repo is a packaging layer: never patch upstream CLI behaviour. Fixes
    belong upstream, then land here as a submodule bump.
 8. `skills/obsidian-vault-cli/SKILL.md` documents the CLI surface for agents.

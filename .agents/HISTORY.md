@@ -23,6 +23,7 @@ Routine history lives in git; only record what is costly to rediscover.
 | 2026-11-20 | Runtime deps pinned to upstream 1.0.51 (`chokidar` 6, `minimatch` 11, `octagonal-wheels` 0.1.56, `werift` 0.24.4) | `chokidar` and `werift` resolve at runtime, `minimatch` and `octagonal-wheels` are bundled — a stale pin silently ships older code | 96060c1 |
 | 2026-11-20 | `npm test` repointed from `bin/livesync-cli.js` to `bin/livesync-cli.cjs` | The generated launcher is CJS but the package is `"type": "module"`, so the test script always crashed | 96060c1 |
 | 2026-11-20 | npm publish of `1.0.51-cli.1` blocked — `NPM_TOKEN` revoked/expired | The tag was pushed and the GitHub Release created, but the registry rejects the token (HTTP 404 on the package `PUT`, 401 on `GET /-/whoami`). Publishing needs a fresh npm token | tag `v1.0.51-cli` |
+| 2026-11-20 | Release workflow switched to npm Trusted Publishing (OIDC); `NPM_TOKEN` secret and `node-version: "22"` removed | Token expiry is a recurring blocker and minting a replacement needs the npm license key. OIDC needs npm CLI ≥ 11.5.1 — Node 22 ships npm 10.9.9, Node 26 ships 11.20.0 | 866f6be |
 
 ## Do not record
 
