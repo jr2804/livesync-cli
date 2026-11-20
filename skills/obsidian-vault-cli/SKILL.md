@@ -1,7 +1,7 @@
 ---
 name: obsidian-vault-cli
 description: Use when reading, writing, listing, or managing files in an Obsidian vault synced by Self-hosted LiveSync via CouchDB. Uses the @jr2804/livesync-cli npm package.
-version: 3.1.0
+version: 3.2.0
 author: Jan Reimes
 license: MIT
 metadata:
@@ -110,7 +110,10 @@ livesync-cli ./my-vault mirror --vault /path/to/vault
 | `sync` | One replication cycle | `livesync-cli ./db sync` |
 | `daemon` | Continuous sync (default) | `livesync-cli ./db daemon --vault /vault` |
 | `daemon --interval <N>` | Polling mode | `livesync-cli ./db daemon --interval 30` |
-| `mirror` | Mirror DB to filesystem | `livesync-cli ./db mirror --vault /vault` |
+| `mirror` | Mirror DB ↔ filesystem | `livesync-cli ./db mirror --vault /vault` |
+| `journal-skip <journal-key>` | Skip a stuck Object Storage Journal and resume replication | `livesync-cli ./db journal-skip 7-docs.jsonl.gz` |
+| `rebuild --force` | Rebuild local + remote databases from the Vault | `livesync-cli ./db rebuild --force --vault /vault` |
+| `fetch --force` | Replace the local database with remote state | `livesync-cli ./db fetch --force --vault /vault` |
 
 ### Remote Management
 
@@ -153,6 +156,8 @@ Vault path, CouchDB URL, database name, and credentials are stored in Vaultwarde
 3. **Path obfuscation mismatch** — if the vault uses path obfuscation but `usePathObfuscation` is not set, the daemon reports success but writes 0-byte files.
 4. **Database directory not initialized** — the first `sync` or `daemon` run creates the PouchDB database. If the directory doesn't exist, create it first.
 5. **CouchDB URL not reachable** — the default `.env` URL may only resolve inside the Docker network. Use the external URL when connecting from outside.
+6. **Interrupted `fetch` / `rebuild`** — leaves a record in `<db-path>/.livesync/reconstruction.json`, and ordinary sync/mutating commands stop while it is pending. Retry the *same* command with `--force` and the same paths; do not delete the record.
+7. **`sync` stops at a Journal** — retry with `--debug` to see the Journal key, then `journal-skip <journal-key>` to skip that exact stuck Journal and resume.
 
 ## Tips
 

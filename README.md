@@ -23,7 +23,10 @@ livesync-cli <database-path> daemon --vault /path/to/vault
 |---------|-------------|
 | `daemon` | (default) Run mirror scan then continuously sync CouchDB ↔ local filesystem |
 | `sync` | Run one replication cycle and exit |
-| `mirror` | Run a full mirror scan (filesystem → DB) without continuous sync |
+| `mirror` | Bidirectional sync between the local database and the vault directory |
+| `journal-skip <journal-key>` | Retry replication, skip only the matching stopped Journal, and resume |
+| `rebuild` | Rebuild the local and remote databases from the vault (requires `--force`) |
+| `fetch` | Replace the local database with remote state and reflect it to the vault (requires `--force`) |
 
 ### File operations
 
